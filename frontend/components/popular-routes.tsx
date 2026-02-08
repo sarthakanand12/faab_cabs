@@ -1,21 +1,36 @@
 "use client"
 
 import { useLanguage } from "@/contexts/language-context"
+import { useBookingForm } from "@/contexts/booking-form-context"
 import { ArrowRight, Car, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
 
 const popularRoutes = [
-  { from: "Jamui", to: "Patna", distance: "360 km", price: "₹2,799", duration: "3h", rating: 4.8 },
-  { from: "Bhagalpur", to: "Deoghar", distance: "270 km", price: "₹1,999", duration: "1h 40m", rating: 4.8 },
-  { from: "Jamui", to: "Ayodhya", distance: "1200 km", price: "₹9,999", duration: "8h 30m", rating: 4.7 },
-  { from: "Lakhisarai", to: "Patna", distance: "270 km", price: "1,999", duration: "2h 20m", rating: 4.9 },
-  { from: "Jamshedpur", to: "Ranchi", distance: "120 km", price: "₹1,499", duration: "1h 40m", rating: 4.7 },
-  { from: "Jamui", to: "Deoghar", distance: "200 km", price: "₹1,499", duration: "2h", rating: 4.9 },
+  { id: 1, from: "Jamui", to: "Patna", distance: "360 km", price: "₹2,799", duration: "3h", rating: 4.8 },
+  { id: 2, from: "Bhagalpur", to: "Deoghar", distance: "270 km", price: "₹1,999", duration: "1h 40m", rating: 4.8 },
+  { id: 3, from: "Jamui", to: "Ayodhya", distance: "1200 km", price: "₹9,999", duration: "8h 30m", rating: 4.7 },
+  { id: 4, from: "Lakhisarai", to: "Patna", distance: "270 km", price: "1,999", duration: "2h 20m", rating: 4.9 },
+  { id: 5, from: "Jamshedpur", to: "Ranchi", distance: "120 km", price: "₹1,499", duration: "1h 40m", rating: 4.7 },
+  { id: 6, from: "Jamui", to: "Deoghar", distance: "200 km", price: "₹1,499", duration: "2h", rating: 4.9 },
 ]
 
 export function PopularRoutes() {
   const { t } = useLanguage()
+  const { setPrefilledData } = useBookingForm()
+
+  const handleRouteClick = (from: string, to: string) => {
+    setPrefilledData({
+      fromCity: from,
+      toCity: to,
+      tripType: "oneway",
+    })
+    
+    // Scroll to booking form
+    const formElement = document.getElementById("booking-form")
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: "smooth", block: "center" })
+    }
+  }
 
   return (
     <section className="py-16 md:py-24 bg-secondary/30">
@@ -32,9 +47,9 @@ export function PopularRoutes() {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {popularRoutes.map((route, index) => (
+          {popularRoutes.map((route) => (
             <div
-              key={index}
+              key={route.id}
               className="bg-card rounded-xl overflow-hidden border border-border hover:shadow-lg transition-all group"
             >
               <div className="bg-gradient-to-r from-primary/30 to-primary/10 p-4">
@@ -71,11 +86,13 @@ export function PopularRoutes() {
                     <span className="text-xs text-muted-foreground">{t("starting_from")}</span>
                     <p className="text-xl font-bold text-accent">{route.price}</p>
                   </div>
-                  <Link href="/thank-you">
-                    <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                      {t("book_now")}
-                    </Button>
-                  </Link>
+                  <Button 
+                    size="sm" 
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    onClick={() => handleRouteClick(route.from, route.to)}
+                  >
+                    {t("book_now")}
+                  </Button>
                 </div>
               </div>
             </div>

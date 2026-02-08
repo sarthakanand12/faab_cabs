@@ -2,7 +2,9 @@ import React from "react"
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from 'sonner'
 import { LanguageProvider } from '@/contexts/language-context'
+import { BookingFormProvider } from '@/contexts/booking-form-context'
 import './globals.css'
 
 const geist = Geist({ 
@@ -33,8 +35,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}>
         <LanguageProvider>
-          {children}
+          <BookingFormProvider>
+            {children}
+          </BookingFormProvider>
         </LanguageProvider>
+        <Toaster position="top-center" richColors />
         <Analytics />
       </body>
     </html>

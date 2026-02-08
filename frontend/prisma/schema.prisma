@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RentalType {
+  OUTSTATION
+  LOCAL
+  AIRPORT
+}
+
+enum OutstationTripType {
+  ONE_WAY
+  ROUND_TRIP
+}
+
+enum AirportTransferType {
+  PICKUP_FROM_AIRPORT
+  DROP_TO_AIRPORT
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum AdminAccess {
+  READ
+  WRITE
+}
+
+
+model Booking {
+  id            String        @id @default(cuid())
+  bookingId     String        @unique
+  rentalType    RentalType
+  status        BookingStatus @default(PENDING)
+
+  phoneNumber     String        // Unified field for contact
+  carType         String
+  pickupDate      DateTime
+  pickupTime      String
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  outstationDetails OutstationBooking?
+  localDetails      LocalBooking?
+  airportDetails    AirportBooking?
+
+  @@index([rentalType])
+  @@index([phoneNumber])
+  @@index([status])
+  @@index([pickupDate])
+  @@index([createdAt])
+}
+
+model OutstationBooking {
+  id              String             @id @default(cuid())
+  bookingId       String             @unique
+  booking         Booking            @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  tripType        OutstationTripType
+  pickupCity      String
+  destinationCity String
+  dropDate        DateTime?
+}
+
+model LocalBooking {
+  id              String   @id @default(cuid())
+  bookingId       String   @unique
+  booking         Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  pickupCity      String
+  destinationCity String
+  packageType     String
+}
+
+model AirportBooking {
+  id              String              @id @default(cuid())
+  bookingId       String              @unique
+  booking         Booking             @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  transferType    AirportTransferType
+  airportName     String
+  city            String              // Serves as pickup city (if drop to airport) or drop city (if pickup from)
+}
+
+model Admin {
+  id        String      @id @default(cuid())
+  username  String      @unique
+  password  String      // Hashed password
+  access    AdminAccess @default(READ)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}

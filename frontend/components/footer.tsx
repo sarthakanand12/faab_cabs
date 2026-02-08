@@ -1,9 +1,9 @@
 "use client"
 
-import Link from "next/link"
+import { Facebook, Instagram, Mail, MapPin, Phone } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
-import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react"
 
 export function Footer() {
   const { t } = useLanguage()
@@ -27,26 +27,26 @@ export function Footer() {
               {t("footer_desc")}
             </p>
             <div className="flex gap-3">
-              <a 
-                href="https://www.facebook.com/your-page" 
-                target="_blank" 
+              <a
+                href="https://www.facebook.com/your-page"
+                target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
                 className="h-9 w-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 <Facebook className="h-4 w-4" />
               </a>
-              <a 
-                href="https://www.instagram.com/fabcab1651/" 
-                target="_blank" 
+              <a
+                href="https://www.instagram.com/fabcab1651/"
+                target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
                 className="h-9 w-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 <Instagram className="h-4 w-4" />
               </a>
-              <a 
-                href="mailto:fabcab1651@gmail.com" 
+              <a
+                href="mailto:fabcab1651@gmail.com"
                 aria-label="Email"
                 className="h-9 w-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
               >

@@ -24,7 +24,7 @@ export const translations: Translations = {
   "suv": { en: "SUV", hi: "एसयूवी" },
   "luxury": { en: "Luxury", hi: "लग्जरी" },
   "tempo_traveller": { en: "Tempo Traveller", hi: "टेम्पो ट्रैवलर" },
-  
+
   // Hero Section
   "hero_title": { en: "Your Trusted", hi: "आपका भरोसेमंद" },
   "hero_highlight": { en: "Inter-City", hi: "इंटर-सिटी" },
@@ -42,6 +42,7 @@ export const translations: Translations = {
   "airport": { en: "Airport", hi: "एयरपोर्ट" },
   "one_way": { en: "One Way", hi: "वन वे" },
   "enter_city": { en: "Enter city", hi: "शहर दर्ज करें" },
+  "enter_destination_city" : {en: "Enter Destination City", hi: "गंतव्य शहर दर्ज करें"},
   "enter_airport": { en: "Enter airport name", hi: "एयरपोर्ट का नाम दर्ज करें" },
   "pickup": { en: "Pickup", hi: "पिकअप" },
   "drop": { en: "Drop", hi: "ड्रॉप" },
@@ -52,7 +53,7 @@ export const translations: Translations = {
   "submit_request": { en: "Submit Request", hi: "अनुरोध जमा करें" },
   "no_hidden_charges": { en: "No hidden charges. All prices inclusive of taxes, tolls & driver allowance", hi: "कोई छुपा शुल्क नहीं। सभी कीमतों में टैक्स, टोल और ड्राइवर भत्ता शामिल है" },
   "select_package": { en: "Select Package", hi: "पैकेज चुनें" },
-  
+
   // Services Section
   "our_services": { en: "Our Services", hi: "हमारी सेवाएं" },
   "outstation_desc": { en: "One way & round trips to 50+ cities in Bihar, Jharkhand, West Bengal and Odisha", hi: "बिहार, झारखंड, पश्चिम बंगाल और ओडिशा में 50+ शहरों के लिए वन वे और राउंड ट्रिप" },
@@ -67,14 +68,14 @@ export const translations: Translations = {
   "luxury_desc": { en: "Premium cars for business travel and special occasions", hi: "व्यापार यात्रा और विशेष अवसरों के लिए प्रीमियम कारें" },
   "safe_travel": { en: "Safe Travel", hi: "सुरक्षित यात्रा" },
   "safe_desc": { en: "Sanitized cabs, verified drivers, and real-time tracking", hi: "सैनिटाइज्ड कैब, सत्यापित ड्राइवर और रियल-टाइम ट्रैकिंग" },
-  
+
   // Popular Routes
   "popular_routes": { en: "Popular Routes", hi: "लोकप्रिय मार्ग" },
   "starting_from": { en: "Starting from", hi: "शुरुआत" },
   "book_now": { en: "Book Now", hi: "अभी बुक करें" },
   "view_all_routes": { en: "View All Routes", hi: "सभी मार्ग देखें" },
   "popular_cities": { en: "Popular Cities", hi: "लोकप्रिय शहर" },
-  
+
   // Why Choose Us
   "why_choose_us": { en: "Why Choose Faab Cabs", hi: "Faab Cabs क्यों चुनें" },
   "transparent_pricing": { en: "Transparent Pricing", hi: "पारदर्शी मूल्य" },
@@ -92,11 +93,11 @@ export const translations: Translations = {
   "on_time_guarantee": { en: "On-Time Guarantee", hi: "समय पर गारंटी" },
   "on_time_desc": { en: "Punctual pickups with real-time tracking.", hi: "रियल-टाइम ट्रैकिंग के साथ समय पर पिकअप" },
   "years_experience": { en: "Years Experience", hi: "वर्षों का अनुभव" },
-  
+
   // Testimonials
   "customer_reviews": { en: "Customer Reviews", hi: "ग्राहक समीक्षाएं" },
   "testimonials_subtitle": { en: "What our customers say about their experience with Faab Cabs", hi: "Faab Cabs के साथ अपने अनुभव के बारे में हमारे ग्राहक क्या कहते हैं" },
-  
+
   // Contact Section
   "write_to_us": { en: "Write to Us", hi: "हमें लिखें" },
   "contact_subtitle": { en: "Have a query or feedback? We'd love to hear from you! For corporate booking, become a partner driver, or sponsorships, reach out to us.", hi: "कोई प्रश्न या फीडबैक है? हमें आपसे सुनना अच्छा लगेगा! कॉर्पोरेट बुकिंग, पार्टनर ड्राइवर बनने, या प्रायोजन के लिए हमसे संपर्क करें।" },
@@ -110,7 +111,7 @@ export const translations: Translations = {
   "response_submitted": { en: "Your response has been submitted!", hi: "आपका जवाब जमा कर दिया गया है!" },
   "we_will_contact": { en: "We will get back to you soon.", hi: "हम जल्द ही आपसे संपर्क करेंगे।" },
   "close": { en: "Close", hi: "बंद करें" },
-  
+
   // Footer
   "footer_desc": { en: "Your trusted car partner & rental service. Book inter-city cabs, airport transfers, and local rentals with transparent pricing.", hi: "आपका भरोसेमंद कार भागीदार & रेंटल सेवा। पारदर्शी मूल्य के साथ इंटर-सिटी कैब, एयरपोर्ट ट्रांसफर और लोकल रेंटल बुक करें।" },
   "services": { en: "Services", hi: "सेवाएं" },
@@ -122,13 +123,13 @@ export const translations: Translations = {
   "blog": { en: "Blog", hi: "ब्लॉग" },
   "contact": { en: "Contact", hi: "संपर्क" },
   "all_rights_reserved": { en: "All rights reserved.", hi: "सर्वाधिकार सुरक्षित।" },
-  
+
   // Thank You Page
   "thank_you": { en: "Thank You!", hi: "धन्यवाद!" },
   "request_submitted": { en: "Your request has been submitted", hi: "आपका अनुरोध जमा कर दिया गया है" },
   "whatsapp_contact": { en: "We will get back to you on your WhatsApp number", hi: "हम आपके व्हाट्सएप नंबर पर आपसे संपर्क करेंगे" },
   "back_to_home": { en: "Back to Home", hi: "होम पर वापस जाएं" },
-  
+
   // Language Selector
   "select_language": { en: "Select Language", hi: "भाषा चुनें" },
   "english": { en: "English", hi: "अंग्रेजी" },
@@ -154,7 +155,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const savedLang = localStorage.getItem("fabcabs-language") as Language
     const hasSelected = localStorage.getItem("fabcabs-language-selected")
-    
+
     if (savedLang) {
       setLanguage(savedLang)
     }
