@@ -6,12 +6,12 @@ import { ArrowRight, Car, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const popularRoutes = [
-  { id: 1, from: "Jamui", to: "Patna", distance: "360 km", price: "₹2,799", duration: "3h", rating: 4.8 },
-  { id: 2, from: "Bhagalpur", to: "Deoghar", distance: "270 km", price: "₹1,999", duration: "1h 40m", rating: 4.8 },
-  { id: 3, from: "Jamui", to: "Ayodhya", distance: "1200 km", price: "₹9,999", duration: "8h 30m", rating: 4.7 },
-  { id: 4, from: "Lakhisarai", to: "Patna", distance: "270 km", price: "1,999", duration: "2h 20m", rating: 4.9 },
-  { id: 5, from: "Jamshedpur", to: "Ranchi", distance: "120 km", price: "₹1,499", duration: "1h 40m", rating: 4.7 },
-  { id: 6, from: "Jamui", to: "Deoghar", distance: "200 km", price: "₹1,499", duration: "2h", rating: 4.9 },
+  { id: 1, from: "Jamui", to: "Patna", distance: "180 km", price: "₹2,799", duration: "3h", rating: 4.8 },
+  { id: 2, from: "Bhagalpur", to: "Deoghar", distance: "140 km", price: "₹1,999", duration: "1h 40m", rating: 4.8 },
+  { id: 3, from: "Jamui", to: "Ayodhya", distance: "600 km", price: "₹7999", duration: "8h 30m", rating: 4.7 },
+  { id: 4, from: "Lakhisarai", to: "Patna", distance: "140 km", price: "1,999", duration: "2h 20m", rating: 4.9 },
+  { id: 5, from: "Jamshedpur", to: "Ranchi", distance: "120 km", price: "₹1,299", duration: "1h 40m", rating: 4.7 },
+  { id: 6, from: "Jamui", to: "Deoghar", distance: "110 km", price: "₹1,499", duration: "2h", rating: 4.9 },
 ]
 
 export function PopularRoutes() {
