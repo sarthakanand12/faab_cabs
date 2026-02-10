@@ -85,9 +85,6 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-background/70">
               <li><Link href="#" className="hover:text-primary transition-colors">{t("about_us")}</Link></li>
               <li><Link href="#" className="hover:text-primary transition-colors">{t("careers")}</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">{t("blog")}</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">Partner With Us</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">{t("contact_us")}</Link></li>
             </ul>
           </div>
 
@@ -102,6 +99,10 @@ export function Footer() {
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-primary" />
                 <a href="mailto:fabcab1651@gmail.com" className="hover:text-primary transition-colors">fabcab1651@gmail.com</a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Instagram className="h-4 w-4 text-primary" />
+                <a href="https://www.instagram.com/fabcab1651/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">@fabcab1651</a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-primary mt-1" />

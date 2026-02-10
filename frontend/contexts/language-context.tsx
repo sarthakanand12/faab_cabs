@@ -42,7 +42,7 @@ export const translations: Translations = {
   "airport": { en: "Airport", hi: "एयरपोर्ट" },
   "one_way": { en: "One Way", hi: "वन वे" },
   "enter_city": { en: "Enter city", hi: "शहर दर्ज करें" },
-  "enter_destination_city" : {en: "Enter Destination City", hi: "गंतव्य शहर दर्ज करें"},
+  "enter_destination_city": { en: "Enter Destination City", hi: "गंतव्य शहर दर्ज करें" },
   "enter_airport": { en: "Enter airport name", hi: "एयरपोर्ट का नाम दर्ज करें" },
   "pickup": { en: "Pickup", hi: "पिकअप" },
   "drop": { en: "Drop", hi: "ड्रॉप" },
@@ -51,7 +51,7 @@ export const translations: Translations = {
   "select_car": { en: "Select Car Type", hi: "कार प्रकार चुनें" },
   "max_passengers": { en: "Max Passengers", hi: "अधिकतम यात्री" },
   "submit_request": { en: "Submit Request", hi: "अनुरोध जमा करें" },
-  "no_hidden_charges": { en: "No hidden charges. All prices inclusive of taxes, tolls & driver allowance", hi: "कोई छुपा शुल्क नहीं। सभी कीमतों में टैक्स, टोल और ड्राइवर भत्ता शामिल है" },
+  "no_hidden_charges": { en: "No hidden charges, with rides starting at Rs. 13/km(T&C apply)", hi: "कोई छुपा शुल्क नहीं। राइडों की शुरुआत की कीमत Rs. 13/km से है(T&C apply)" },
   "select_package": { en: "Select Package", hi: "पैकेज चुनें" },
 
   // Services Section
@@ -79,7 +79,7 @@ export const translations: Translations = {
   // Why Choose Us
   "why_choose_us": { en: "Why Choose Faab Cabs", hi: "Faab Cabs क्यों चुनें" },
   "transparent_pricing": { en: "Transparent Pricing", hi: "पारदर्शी मूल्य" },
-  "transparent_desc": { en: "No hidden charges. What you see is what you pay. All taxes and tolls included in the fare.", hi: "कोई छुपा शुल्क नहीं। जो आप देखते हैं वही आप भुगतान करते हैं। सभी टैक्स और टोल किराये में शामिल हैं।" },
+  "transparent_desc": { en: "No hidden charges, with rides starting at Rs. 13/km (T&C apply)", hi: "कोई छुपा शुल्क नहीं। राइडों की शुरुआत की कीमत Rs. 13/km से है(T&C apply)" },
   "verified_drivers": { en: "Verified Drivers", hi: "सत्यापित ड्राइवर" },
   "verified_desc": { en: "All our drivers are background verified, trained professionals with years of experience.", hi: "हमारे सभी ड्राइवर बैकग्राउंड वेरिफाइड, प्रशिक्षित पेशेवर हैं जिनके पास वर्षों का अनुभव है।" },
   "support_24_7": { en: "24/7 Support", hi: "24/7 सहायता" },
@@ -118,10 +118,7 @@ export const translations: Translations = {
   "airport_transfers": { en: "Airport Transfers", hi: "एयरपोर्ट ट्रांसफर" },
   "company": { en: "Company", hi: "कंपनी" },
   "about_us": { en: "About Us", hi: "हमारे बारे में" },
-  "contact_us": { en: "Contact Us", hi: "संपर्क करें" },
-  "careers": { en: "Careers", hi: "करियर" },
-  "blog": { en: "Blog", hi: "ब्लॉग" },
-  "contact": { en: "Contact", hi: "संपर्क" },
+  "careers": { en: "Become a partner driver", hi: "पार्टनर ड्राइवर बनें" },
   "all_rights_reserved": { en: "All rights reserved.", hi: "सर्वाधिकार सुरक्षित।" },
 
   // Thank You Page
