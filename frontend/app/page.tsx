@@ -9,6 +9,7 @@ import { Testimonials } from "@/components/testimonials"
 import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
 import { LanguageSelector } from "@/components/language-selector"
+import { FloatingBookRideButton } from "@/components/floating-book-ride-button"
 
 export default function HomePage() {
   return (
@@ -22,6 +23,7 @@ export default function HomePage() {
       <Testimonials />
       <ContactSection />
       <Footer />
+      <FloatingBookRideButton />
     </main>
   )
 }

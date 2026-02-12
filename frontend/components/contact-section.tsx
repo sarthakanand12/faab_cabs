@@ -7,13 +7,12 @@ import { useLanguage } from "@/contexts/language-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Send, User, Phone, Mail, MessageSquare, CheckCircle2, X } from "lucide-react"
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+import { createWriteToUsAction } from "@/lib/actions/write-to-us"
+import { useServerAction } from "zsa-react"
 
 export function ContactSection() {
   const { t } = useLanguage()
   const [showPopup, setShowPopup] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: "",
@@ -21,28 +20,30 @@ export function ContactSection() {
     email: "",
     message: ""
   })
+  const { execute, isPending } = useServerAction(createWriteToUsAction)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitError(null)
-    setIsSubmitting(true)
-    try {
-      const res = await fetch(`${API_BASE}/api/contact-request`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) {
-        setSubmitError(data?.error || data?.detail || `Request failed (${res.status})`)
-        return
-      }
+    setShowPopup(true)
+    setFormData({ name: "", phone: "", email: "", message: "" })
+
+    const [result, error] = await execute({
+      customerName: formData.name,
+      contactNumber: formData.phone,
+      emailId: formData.email,
+      message: formData.message,
+      source: "website-contact-section",
+    })
+
+    if (error) {
+      setSubmitError(error.message || "Something went wrong. Please try again.")
+      return
+    }
+
+    if (result?.success) {
       setShowPopup(true)
       setFormData({ name: "", phone: "", email: "", message: "" })
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -136,10 +137,10 @@ export function ContactSection() {
                 )}
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isPending}
                   className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg disabled:opacity-70"
                 >
-                  {isSubmitting ? (
+                  {isPending ? (
                     <span className="flex items-center gap-2">
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
                       Sending…

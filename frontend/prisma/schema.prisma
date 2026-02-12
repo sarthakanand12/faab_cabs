@@ -106,3 +106,16 @@ model Admin {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }
+
+model WriteToUsData {
+  id            Int      @id @default(autoincrement())
+  customerName  String
+  contactNumber String
+  emailId       String
+  message       String
+  source        String?  // Optional source/page tag for analytics
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("write_to_us_data")
+}
