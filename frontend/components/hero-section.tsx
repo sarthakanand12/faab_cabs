@@ -70,8 +70,10 @@ export function HeroSection() {
                 </span>
               </p>
             </div>
-            <p className="text-muted-foreground text-lg md:text-xl mb-6">
-              {t("hero_subtitle")}
+            <p className="inline-block rounded-md px-3 py-2 text-lg text-black md:text-xl mb-6">
+              <span className="font-semibold text-foreground">
+                {t("hero_subtitle")}
+              </span>
             </p>
             <div className="flex flex-wrap justify-center lg:justify-start gap-6 text-sm md:text-base">
               <div className="flex items-center gap-2">

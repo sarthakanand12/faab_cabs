@@ -10,6 +10,7 @@ import { useServerAction } from "zsa-react"
 import { createBookingAction } from "@/lib/actions/bookings"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { BookingVerificationDialog } from "@/components/booking-verification-dialog"
 
 const carTypes = [
   { id: "sedan", name: "Sedan", nameHi: "सेडान", maxPassengers: 4 },
@@ -36,11 +37,11 @@ export function AirportForm({ onSubmit }: AirportFormProps) {
   const [phone, setPhone] = useState("")
   const [selectedCar, setSelectedCar] = useState("")
   const [showCarDropdown, setShowCarDropdown] = useState(false)
+  const [showVerifyDialog, setShowVerifyDialog] = useState(false)
 
   const selectedCarData = carTypes.find(car => car.id === selectedCar)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const submitBooking = async () => {
 
     const carDisplay = selectedCarData ? (language === "hi" ? selectedCarData.nameHi : selectedCarData.name) : ""
 
@@ -64,8 +65,20 @@ export function AirportForm({ onSubmit }: AirportFormProps) {
     }
 
     if (result?.success) {
+      setShowVerifyDialog(false)
       router.push(`/thank-you?bookingId=${result.bookingId}`)
     }
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (!e.currentTarget.checkValidity()) {
+      e.currentTarget.reportValidity()
+      return
+    }
+
+    setShowVerifyDialog(true)
   }
 
   return (
@@ -208,6 +221,13 @@ export function AirportForm({ onSubmit }: AirportFormProps) {
           )}
         </Button>
       </div>
+      <BookingVerificationDialog
+        open={showVerifyDialog}
+        onOpenChange={setShowVerifyDialog}
+        phoneNumber={phone}
+        onConfirm={submitBooking}
+        isSubmitting={isPending}
+      />
     </form>
   )
 }

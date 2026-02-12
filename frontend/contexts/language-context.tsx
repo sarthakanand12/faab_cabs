@@ -132,6 +132,16 @@ export const translations: Translations = {
   "english": { en: "English", hi: "अंग्रेजी" },
   "hindi": { en: "Hindi", hi: "हिंदी" },
   "continue": { en: "Continue", hi: "जारी रखें" },
+
+  // Booking verification dialog
+  "verify_mobile_title": { en: "Verify mobile number before submitting", hi: "सबमिट करने से पहले मोबाइल नंबर सत्यापित करें" },
+  "verify_mobile_description": { en: "Please confirm your mobile number before final submission.", hi: "अंतिम सबमिट से पहले अपना मोबाइल नंबर कन्फर्म करें।" },
+  "mobile_label": { en: "Mobile", hi: "मोबाइल" },
+  "edit": { en: "Edit", hi: "बदलें" },
+  "confirm_and_submit": { en: "Confirm & Submit", hi: "पुष्टि करें और सबमिट करें" },
+  "submitting": { en: "Submitting...", hi: "सबमिट हो रहा है..." },
+  "mobile_incorrect": { en: "Your mobile number seems to be incorrect. Please check.", hi: "आपका मोबाइल नंबर गलत प्रतीत होता है, कृपया जांच करें।" },
+
 }
 
 interface LanguageContextType {

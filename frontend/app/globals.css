@@ -142,3 +142,22 @@
 .animate-scroll {
   animation: scroll 30s linear infinite;
 }
+
+@keyframes verifyZoomIn {
+
+  0% {
+    transform: scale(0.5);
+  }
+
+  50% {
+    transform: scale(0.9);
+  }
+}
+
+.booking-verify-zoom {
+  animation: verifyZoomIn 1500ms ease-out;
+}
+
+.bold-text-mobile-number-to-verify {
+  font-size: 20px;
+}

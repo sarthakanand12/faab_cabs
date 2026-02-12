@@ -10,6 +10,7 @@ import { useServerAction } from "zsa-react"
 import { createBookingAction } from "@/lib/actions/bookings"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { BookingVerificationDialog } from "@/components/booking-verification-dialog"
 
 const carTypes = [
   { id: "sedan", name: "Sedan", nameHi: "सेडान", maxPassengers: 4 },
@@ -28,32 +29,33 @@ export function LocalForm({ onSubmit }: LocalFormProps) {
   const { t, language } = useLanguage()
   const router = useRouter()
   const { execute, isPending } = useServerAction(createBookingAction)
-  const [fromCity, setFromCity] = useState("")
+  const [sourceCity, setSourceCity] = useState("")
+  const [destinationCity, setDestinationCity] = useState("")
   const [date, setDate] = useState("")
   const [time, setTime] = useState("10:00")
   const [localPackage, setLocalPackage] = useState("")
   const [phone, setPhone] = useState("")
   const [selectedCar, setSelectedCar] = useState("")
   const [showCarDropdown, setShowCarDropdown] = useState(false)
+  const [showVerifyDialog, setShowVerifyDialog] = useState(false)
 
   const selectedCarData = carTypes.find(car => car.id === selectedCar)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+  const submitBooking = async () => {
+
     const carDisplay = selectedCarData ? (language === "hi" ? selectedCarData.nameHi : selectedCarData.name) : ""
-    
+
     const [result, error] = await execute({
       rentalType: "LOCAL",
-      pickupCity: fromCity,
-      destinationCity: fromCity, // For local rentals, pickup and destination are the same city
+      pickupCity: sourceCity,
+      destinationCity,
       pickupDate: date,
       pickupTime: time,
-      packageType: localPackage,
+      packageType: localPackage || undefined,
       phoneNumber: phone,
       carType: carDisplay || selectedCar,
     })
-    
+
     if (error) {
       toast.error("Failed to create booking", {
         description: error.message,
@@ -63,8 +65,20 @@ export function LocalForm({ onSubmit }: LocalFormProps) {
     }
 
     if (result?.success) {
+      setShowVerifyDialog(false)
       router.push(`/thank-you?bookingId=${result.bookingId}`)
     }
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (!e.currentTarget.checkValidity()) {
+      e.currentTarget.reportValidity()
+      return
+    }
+
+    setShowVerifyDialog(true)
   }
 
   return (
@@ -75,8 +89,19 @@ export function LocalForm({ onSubmit }: LocalFormProps) {
           <Input
             placeholder={t("enter_city")}
             className="pl-10 h-12 bg-secondary/50 border-border focus:border-primary"
-            value={fromCity}
-            onChange={(e) => setFromCity(e.target.value)}
+            value={sourceCity}
+            onChange={(e) => setSourceCity(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="relative">
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-accent" />
+          <Input
+            placeholder={t("enter_destination_city")}
+            className="pl-10 h-12 bg-secondary/50 border-border focus:border-primary"
+            value={destinationCity}
+            onChange={(e) => setDestinationCity(e.target.value)}
             required
           />
         </div>
@@ -105,7 +130,7 @@ export function LocalForm({ onSubmit }: LocalFormProps) {
         </div>
 
         <div className="bg-secondary/50 rounded-lg p-4">
-          <p className="text-sm text-muted-foreground mb-2">{t("select_package")}</p>
+          <p className="text-sm text-muted-foreground mb-2">{t("select_package")} ({language === "hi" ? "वैकल्पिक" : "Optional"})</p>
           <div className="grid grid-cols-3 gap-2">
             {LOCAL_PACKAGES.map((pkg) => (
               <button
@@ -190,6 +215,13 @@ export function LocalForm({ onSubmit }: LocalFormProps) {
           )}
         </Button>
       </div>
+      <BookingVerificationDialog
+        open={showVerifyDialog}
+        onOpenChange={setShowVerifyDialog}
+        phoneNumber={phone}
+        onConfirm={submitBooking}
+        isSubmitting={isPending}
+      />
     </form>
   )
 }

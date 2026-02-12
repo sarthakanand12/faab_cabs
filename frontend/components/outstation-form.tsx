@@ -11,6 +11,7 @@ import { useServerAction } from "zsa-react"
 import { createBookingAction } from "@/lib/actions/bookings"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { BookingVerificationDialog } from "@/components/booking-verification-dialog"
 
 const carTypes = [
   { id: "sedan", name: "Sedan", nameHi: "सेडान", maxPassengers: 4 },
@@ -39,6 +40,7 @@ export function OutstationForm({ onSubmit }: OutstationFormProps) {
   const [phone, setPhone] = useState("")
   const [selectedCar, setSelectedCar] = useState("")
   const [showCarDropdown, setShowCarDropdown] = useState(false)
+  const [showVerifyDialog, setShowVerifyDialog] = useState(false)
 
   const selectedCarData = carTypes.find(car => car.id === selectedCar)
 
@@ -57,8 +59,7 @@ export function OutstationForm({ onSubmit }: OutstationFormProps) {
     }
   }, [prefilledData, clearPrefilledData])
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault()
+  const submitBooking = async () => {
 
     const carDisplay = selectedCarData ? (language === "hi" ? selectedCarData.nameHi : selectedCarData.name) : ""
 
@@ -83,8 +84,20 @@ export function OutstationForm({ onSubmit }: OutstationFormProps) {
     }
 
     if (result?.success) {
+      setShowVerifyDialog(false)
       router.push(`/thank-you?bookingId=${result.bookingId}`)
     }
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (!e.currentTarget.checkValidity()) {
+      e.currentTarget.reportValidity()
+      return
+    }
+
+    setShowVerifyDialog(true)
   }
 
   return (
@@ -250,6 +263,13 @@ export function OutstationForm({ onSubmit }: OutstationFormProps) {
           )}
         </Button>
       </div>
+      <BookingVerificationDialog
+        open={showVerifyDialog}
+        onOpenChange={setShowVerifyDialog}
+        phoneNumber={phone}
+        onConfirm={submitBooking}
+        isSubmitting={isPending}
+      />
     </form>
   )
 }

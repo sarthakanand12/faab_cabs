@@ -16,11 +16,11 @@ export const createBookingAction = unauthenticatedAction
   .input(createBookingSchema)
   .handler(async ({ input }) => {
     const bookingId = generateBookingId();
-    
+
     try {
       // Parse date and time
       const pickupDateTime = new Date(`${input.pickupDate}T${input.pickupTime}`);
-      
+
       if (isNaN(pickupDateTime.getTime())) {
         throw new Error("Invalid pickup date or time");
       }
@@ -67,7 +67,7 @@ export const createBookingAction = unauthenticatedAction
               bookingId: booking.id,
               pickupCity: input.pickupCity,
               destinationCity: input.destinationCity,
-              packageType: input.packageType,
+              packageType: input.packageType || "Package not selected",
             },
           });
           break;
@@ -93,11 +93,11 @@ export const createBookingAction = unauthenticatedAction
       };
     } catch (error) {
       console.error("Error creating booking:", error);
-      
+
       if (error instanceof Error) {
         throw new Error(`Failed to create booking: ${error.message}`);
       }
-      
+
       throw new Error("Failed to create booking");
     }
   });
