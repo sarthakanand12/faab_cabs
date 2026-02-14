@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { unauthenticatedAction } from "@/lib/safe-action";
 import { createBookingSchema } from "@/lib/schemas/bookings";
+import { firebaseMessaging } from "@/lib/firebase-admin";
 
 // Helper to generate booking ID
 function generateBookingId(): string {
@@ -98,6 +99,31 @@ export const createBookingAction = unauthenticatedAction
           break;
         }
       }
+
+      // Send FCM push to admins topic
+      try {
+        const messageId = await firebaseMessaging.send({
+          topic: "admins",
+          data: {
+            type: "NEW_BOOKING",
+            bookingId: booking.bookingId,
+            title: "New booking request",
+            body: `Booking ${booking.bookingId} has arrived.`,
+          },
+          android: {
+            priority: "high",
+            notification: {
+              channelId: "admin_orders_alerts",
+              sound: "alarm_alert",
+            },
+          },
+        });
+
+        console.log("FCM sent:", messageId, "bookingId:", booking.bookingId);
+      } catch (pushError) {
+        console.error("FCM send failed for booking", booking.bookingId, pushError);
+      }
+
 
       return {
         success: true,
