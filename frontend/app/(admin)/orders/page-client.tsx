@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { useServerAction } from "zsa-react";
 import { CalendarIcon, Search, Filter, ChevronLeft, ChevronRight, Loader2, MoreHorizontal } from "lucide-react";
@@ -42,6 +42,7 @@ import { getOrdersAction, type OrderFilters, type OrderWithDetails, type OrdersR
 import type { AdminSession } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { supabaseBrowser } from "@/lib/supabase-browser";
 
 const statusColors: Record<string, string> = {
   PENDING: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
@@ -69,22 +70,66 @@ export default function OrdersPageClient({ session }: OrdersPageClientProps) {
   const [pickupDateFrom, setPickupDateFrom] = useState<Date | undefined>();
   const [pickupDateTo, setPickupDateTo] = useState<Date | undefined>();
 
-  const { execute: fetchOrders, isPending } = useServerAction(getOrdersAction);
-  const { execute: updateStatus, isPending: isUpdating } = useServerAction(updateOrderStatusAction, {
-    onSuccess: () => {
-      toast.success("Status updated successfully");
-      loadOrders();
-    },
-    onError: ({ err }) => {
-      toast.error(err.message || "Failed to update status");
-    },
-  });
+  const [soundAlertsEnabled, setSoundAlertsEnabled] = useState(false);
+  const [browserAlertsEnabled, setBrowserAlertsEnabled] = useState(false);
 
-  const loadOrders = useCallback(async () => {
-    const [result, error] = await fetchOrders({
-      ...filters,
-      pickupDateFrom: pickupDateFrom?.toISOString().split("T")[0],
-      pickupDateTo: pickupDateTo?.toISOString().split("T")[0],
+  const { execute: fetchOrders, isPending } = useServerAction(getOrdersAction);
+
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const lastAlarmAtRef = useRef(0);
+  const soundAlertsEnabledRef = useRef(soundAlertsEnabled);
+  const browserAlertsEnabledRef = useRef(browserAlertsEnabled);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reconnectAttemptRef = useRef(0);
+  const hasShownReconnectToastRef = useRef(false);
+  const hasEverSubscribedRef = useRef(false);
+  const lastStatusRef = useRef<string | null>(null);
+  const channelRef = useRef<ReturnType<NonNullable<typeof supabaseBrowser>["channel"]> | null>(null);
+  const loadOrdersRef = useRef<() => Promise<void>>(async () => { });
+  const filtersRef = useRef(filters);
+  const pickupDateFromRef = useRef(pickupDateFrom);
+  const pickupDateToRef = useRef(pickupDateTo);
+  const fetchOrdersRef = useRef(fetchOrders);
+  const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const realtimeTableRef = useRef<"Booking" | "booking">("Booking");
+  const lastSeenTopOrderIdRef = useRef<string | null>(null);
+  const hasLoadedOnceRef = useRef(false);
+  const recentAlertOrderIdRef = useRef<string | null>(null);
+
+  const hasActiveFilters = () => {
+    return Boolean(
+      filtersRef.current.bookingId ||
+      filtersRef.current.phoneNumber ||
+      filtersRef.current.city ||
+      filtersRef.current.rentalType ||
+      filtersRef.current.status ||
+      pickupDateFromRef.current ||
+      pickupDateToRef.current ||
+      (filtersRef.current.page ?? 1) !== 1
+    );
+  };
+
+  const triggerIncomingOrderAlert = async (bookingId?: string, source: "realtime" | "poll" = "realtime") => {
+    if (bookingId && recentAlertOrderIdRef.current === bookingId) {
+      return;
+    }
+
+    if (bookingId) {
+      recentAlertOrderIdRef.current = bookingId;
+    }
+
+    toast.success(source === "realtime" ? "New booking request arrived" : "New booking request detected");
+    showBrowserNotification(bookingId);
+    if (soundAlertsEnabledRef.current) {
+      await playAlarm();
+    }
+  };
+
+  async function loadOrders() {
+    const [result, error] = await fetchOrdersRef.current({
+      ...filtersRef.current,
+      pickupDateFrom: pickupDateFromRef.current?.toISOString().split("T")[0],
+      pickupDateTo: pickupDateToRef.current?.toISOString().split("T")[0],
     });
 
     if (error) {
@@ -93,13 +138,225 @@ export default function OrdersPageClient({ session }: OrdersPageClientProps) {
     }
 
     if (result) {
+      const topOrder = result.orders[0];
+      const topOrderId = topOrder?.bookingId ?? null;
+
+      if (topOrderId && hasLoadedOnceRef.current && !hasActiveFilters() && topOrderId !== lastSeenTopOrderIdRef.current) {
+        await triggerIncomingOrderAlert(topOrderId, "poll");
+      }
+
+      lastSeenTopOrderIdRef.current = topOrderId;
+      hasLoadedOnceRef.current = true;
       setData(result);
     }
+  }
+
+  const { execute: updateStatus, isPending: isUpdating } = useServerAction(updateOrderStatusAction, {
+    onSuccess: () => {
+      toast.success("Status updated successfully");
+      void loadOrders();
+    },
+    onError: ({ err }) => {
+      toast.error(err.message || "Failed to update status");
+    },
+  });
+
+  const playAlarm = async () => {
+    if (!audioContextRef.current) return;
+
+    const now = Date.now();
+    if (now - lastAlarmAtRef.current < 6000) return;
+    lastAlarmAtRef.current = now;
+
+    try {
+      const ctx = audioContextRef.current;
+      if (ctx.state === "suspended") {
+        await ctx.resume();
+      }
+
+      const createDualTone = (startTime: number, duration: number) => {
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        // Classic landline dual frequencies
+        osc1.type = "square";
+        osc2.type = "square";
+        osc1.frequency.value = 440;
+        osc2.frequency.value = 480;
+
+        // Natural ring envelope
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.6, startTime + 0.02);
+        gain.gain.setValueAtTime(0.6, startTime + duration - 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc1.start(startTime);
+        osc2.start(startTime);
+
+        osc1.stop(startTime + duration);
+        osc2.stop(startTime + duration);
+      };
+
+      const base = ctx.currentTime + 0.05;
+
+      // Ring 1 (2 seconds)
+      createDualTone(base, 2);
+
+      // Pause 3 seconds (no sound)
+
+      // Ring 2 (2 seconds)
+      createDualTone(base + 5, 3);
+
+    } catch (error) {
+      console.error("Unable to play alarm", error);
+    }
+  };
+
+  const initAudioContext = () => {
+    if (typeof window === "undefined") return;
+    if (!audioContextRef.current) {
+      audioContextRef.current = new window.AudioContext();
+    }
+  };
+
+  const showBrowserNotification = (bookingId?: string) => {
+    if (!browserAlertsEnabledRef.current) return;
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+    if (Notification.permission !== "granted") return;
+
+    new Notification("New booking request", {
+      body: bookingId ? `Booking ${bookingId} has arrived.` : "A new booking request has arrived.",
+      icon: "/icon.png",
+      tag: "faab-booking-alert",
+    });
+  };
+
+
+  useEffect(() => {
+    if (hasEverSubscribedRef.current) {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+      return;
+    }
+    pollingIntervalRef.current = setInterval(() => {
+      void loadOrdersRef.current();
+    }, 15000);
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    soundAlertsEnabledRef.current = soundAlertsEnabled;
+  }, [soundAlertsEnabled]);
+
+  useEffect(() => {
+    browserAlertsEnabledRef.current = browserAlertsEnabled;
+  }, [browserAlertsEnabled]);
+
+  useEffect(() => {
+    filtersRef.current = filters;
+    pickupDateFromRef.current = pickupDateFrom;
+    pickupDateToRef.current = pickupDateTo;
+    fetchOrdersRef.current = fetchOrders;
+    loadOrdersRef.current = loadOrders;
+    void loadOrders();
   }, [filters, pickupDateFrom, pickupDateTo, fetchOrders]);
 
   useEffect(() => {
-    loadOrders();
-  }, [loadOrders]);
+    if (!supabaseBrowser) return;
+
+    // Store in local constant to help TypeScript with type narrowing
+    const supabase = supabaseBrowser;
+
+    const subscribeToOrdersChannel = () => {
+      const channel = supabase
+        .channel("orders-live-alert")
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: realtimeTableRef.current,
+          },
+          async (payload) => {
+            const bookingId = (payload.new as { bookingId?: string })?.bookingId;
+            await triggerIncomingOrderAlert(bookingId, "realtime");
+            void loadOrdersRef.current();
+          }
+        )
+        .subscribe((status, err) => {
+          lastStatusRef.current = status;
+
+          if (status === "SUBSCRIBED") {
+            hasEverSubscribedRef.current = true;
+            if (hasShownReconnectToastRef.current) {
+              toast.success("Realtime connection restored.");
+            }
+            hasShownReconnectToastRef.current = false;
+            reconnectAttemptRef.current = 0;
+            return;
+          }
+
+          if (status === "TIMED_OUT" || status === "CHANNEL_ERROR" || status === "CLOSED") {
+            if (err) {
+              console.error("Realtime channel error:", err);
+            }
+
+            if (reconnectTimeoutRef.current) {
+              clearTimeout(reconnectTimeoutRef.current);
+              reconnectTimeoutRef.current = null;
+            }
+
+            const delay = Math.min(1000 * 2 ** reconnectAttemptRef.current, 15000);
+            reconnectAttemptRef.current += 1;
+
+            reconnectTimeoutRef.current = setTimeout(() => {
+              if (channelRef.current) {
+                void supabase.removeChannel(channelRef.current);
+                channelRef.current = null;
+              }
+              subscribeToOrdersChannel();
+            }, delay);
+
+            if (!hasShownReconnectToastRef.current && reconnectAttemptRef.current >= 2) {
+              hasShownReconnectToastRef.current = true;
+              const message = hasEverSubscribedRef.current
+                ? "Realtime connection lost. Reconnecting..."
+                : `Realtime is not connected yet (table: ${realtimeTableRef.current}). Check Supabase Realtime + env setup.`;
+              toast.warning(message);
+            }
+          }
+        });
+
+      channelRef.current = channel;
+    };
+
+    subscribeToOrdersChannel();
+
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+      if (channelRef.current) {
+        void supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+      hasShownReconnectToastRef.current = false;
+      reconnectAttemptRef.current = 0;
+    };
+  }, []);
 
   const handleFilterChange = (key: keyof OrderFilters, value: string | undefined) => {
     setFilters((prev) => ({
@@ -140,15 +397,63 @@ export default function OrdersPageClient({ session }: OrdersPageClientProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Orders</h1>
-        <div className="flex items-center gap-4">
-          <Badge variant="outline" className={cn("text-xs h-9 bg-green-500 text-white font-bold", {
-            "bg-yellow-300 text-black": session.access !== 'WRITE'
-          })}>
-            Access: {session.access}
-          </Badge>
-          <Button variant="outline" onClick={clearFilters}>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl sm:text-3xl font-bold">Orders</h1>
+          <div className="shrink-0">
+            <Badge variant="outline" className={cn("text-xs h-9 bg-green-500 text-white font-bold", {
+              "bg-yellow-300 text-black": session.access !== 'WRITE'
+            })}>
+              Access: {session.access}
+            </Badge>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            size="sm"
+            variant={soundAlertsEnabled ? "default" : "outline"}
+            onClick={async () => {
+              initAudioContext();
+              if (audioContextRef.current?.state === "suspended") {
+                await audioContextRef.current.resume();
+              }
+
+              if (!soundAlertsEnabled) {
+                setSoundAlertsEnabled(true);
+                toast.success("Sound alerts enabled");
+                await playAlarm();
+              } else {
+                setSoundAlertsEnabled(false);
+                toast.info("Sound alerts disabled");
+              }
+            }}
+          >
+            {soundAlertsEnabled ? "Sound On" : "Enable Sound"}
+          </Button>
+          <Button
+            size="sm"
+            variant={browserAlertsEnabled ? "default" : "outline"}
+            onClick={async () => {
+              if (!("Notification" in window)) {
+                toast.error("Browser notifications are not supported on this device.");
+                return;
+              }
+
+              const permission = await Notification.requestPermission();
+              if (permission !== "granted") {
+                toast.error("Notification permission denied.");
+                setBrowserAlertsEnabled(false);
+                return;
+              }
+
+              setBrowserAlertsEnabled(true);
+              initAudioContext();
+              toast.success("Browser notifications enabled");
+            }}
+          >
+            {browserAlertsEnabled ? "Browser On" : "Enable Browser"}
+          </Button>
+          <Button size="sm" variant="outline" onClick={clearFilters}>
             Clear Filters
           </Button>
         </div>

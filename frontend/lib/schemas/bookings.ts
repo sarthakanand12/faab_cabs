@@ -22,7 +22,7 @@ export const localBookingSchema = baseBookingSchema.extend({
   rentalType: z.literal("LOCAL"),
   pickupCity: z.string().min(1, "Pickup city is required"),
   destinationCity: z.string().min(1, "Destination city is required"),
-  packageType: z.string().min(1, "Package type is required"),
+  packageType: z.string().optional(),
 });
 
 // Airport booking schema

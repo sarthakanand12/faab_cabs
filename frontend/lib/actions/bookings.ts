@@ -67,7 +67,7 @@ export const createBookingAction = unauthenticatedAction
               bookingId: booking.id,
               pickupCity: input.pickupCity,
               destinationCity: input.destinationCity,
-              packageType: input.packageType || "Package not selected",
+              packageType: input.packageType,
             },
           });
           break;

@@ -41,6 +41,7 @@ export function OutstationForm({ onSubmit }: OutstationFormProps) {
   const [selectedCar, setSelectedCar] = useState("")
   const [showCarDropdown, setShowCarDropdown] = useState(false)
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
+  const isPhoneValid = phone.replace(/\D/g, "").length === 10
 
   const selectedCarData = carTypes.find(car => car.id === selectedCar)
 
@@ -205,8 +206,12 @@ export function OutstationForm({ onSubmit }: OutstationFormProps) {
             placeholder={t("enter_phone")}
             className="pl-10 h-12 bg-secondary/50 border-border focus:border-primary"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
             required
+            inputMode="numeric"
+            maxLength={10}
+            minLength={10}
+            pattern="[0-9]{10}"
           />
         </div>
 
@@ -248,7 +253,7 @@ export function OutstationForm({ onSubmit }: OutstationFormProps) {
 
         <Button
           type="submit"
-          disabled={isPending}
+          disabled={isPending || !isPhoneValid}
           className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg disabled:opacity-70"
         >
           {isPending ? (

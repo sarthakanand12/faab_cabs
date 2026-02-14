@@ -85,7 +85,7 @@ model LocalBooking {
 
   pickupCity      String
   destinationCity String
-  packageType     String
+  packageType     String?
 }
 
 model AirportBooking {
