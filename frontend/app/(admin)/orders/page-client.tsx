@@ -318,7 +318,7 @@ export default function OrdersPageClient({ session }: OrdersPageClientProps) {
               reconnectTimeoutRef.current = null;
             }
 
-            const delay = Math.min(1000 * 2 ** reconnectAttemptRef.current, 15000);
+            const delay = Math.min(1000 * 2 ** reconnectAttemptRef.current, 900000);
             reconnectAttemptRef.current += 1;
 
             reconnectTimeoutRef.current = setTimeout(() => {

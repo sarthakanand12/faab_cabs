@@ -25,6 +25,12 @@ export const localBookingSchema = baseBookingSchema.extend({
   packageType: z.string().optional(),
 });
 
+// Bulk booking schema
+export const bulkBookingSchema = localBookingSchema.extend({
+  rentalType: z.literal("BULK"),
+  vehicleCount: z.number().int().min(1).default(1),
+});
+
 // Airport booking schema
 export const airportBookingSchema = baseBookingSchema.extend({
   rentalType: z.literal("AIRPORT"),
@@ -38,6 +44,7 @@ export const createBookingSchema = z.discriminatedUnion("rentalType", [
   outstationBookingSchema,
   localBookingSchema,
   airportBookingSchema,
+  bulkBookingSchema,
 ]);
 
 export type CreateBookingInput = z.infer<typeof createBookingSchema>;

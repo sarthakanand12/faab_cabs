@@ -141,7 +141,8 @@ export const translations: Translations = {
   "confirm_and_submit": { en: "Confirm & Submit", hi: "पुष्टि करें और सबमिट करें" },
   "submitting": { en: "Submitting...", hi: "सबमिट हो रहा है..." },
   "mobile_incorrect": { en: "Your mobile number seems to be incorrect. Please check.", hi: "आपका मोबाइल नंबर गलत प्रतीत होता है, कृपया जांच करें।" },
-
+  "bulk_booking": { en: "Bulk Booking", hi: "बल्क बुकिंग" },
+  "total_vehicles": { en: "Total Vehicles", hi: "कुल वाहन" },
 }
 
 interface LanguageContextType {

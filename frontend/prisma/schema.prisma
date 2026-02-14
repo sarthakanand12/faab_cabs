@@ -17,6 +17,7 @@ enum RentalType {
   OUTSTATION
   LOCAL
   AIRPORT
+  BULK
 }
 
 enum OutstationTripType {
@@ -50,6 +51,7 @@ model Booking {
 
   phoneNumber     String        // Unified field for contact
   carType         String
+  vehicleCount    Int           @default(1)
   pickupDate      DateTime
   pickupTime      String
 

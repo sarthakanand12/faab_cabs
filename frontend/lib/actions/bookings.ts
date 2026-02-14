@@ -32,6 +32,7 @@ export const createBookingAction = unauthenticatedAction
           rentalType: input.rentalType,
           phoneNumber: input.phoneNumber,
           carType: input.carType,
+          vehicleCount: "vehicleCount" in input ? input.vehicleCount : 1,
           pickupDate: pickupDateTime,
           pickupTime: input.pickupTime,
           status: "PENDING",
@@ -80,6 +81,18 @@ export const createBookingAction = unauthenticatedAction
               transferType: input.transferType,
               airportName: input.airportName,
               city: input.city,
+            },
+          });
+          break;
+        }
+
+        case "BULK": {
+          await prisma.localBooking.create({
+            data: {
+              bookingId: booking.id,
+              pickupCity: input.pickupCity,
+              destinationCity: input.destinationCity,
+              packageType: input.packageType,
             },
           });
           break;

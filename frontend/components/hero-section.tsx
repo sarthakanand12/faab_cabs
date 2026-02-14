@@ -11,8 +11,9 @@ import { cn } from "@/lib/utils"
 import { OutstationForm } from "./outstation-form"
 import { LocalForm } from "./local-form"
 import { AirportForm } from "./airport-form"
+import { BulkBookingForm } from "./bulk-booking-form"
 
-type TripType = "outstation" | "local" | "airport"
+type TripType = "outstation" | "local" | "airport" | "bulk"
 
 export function HeroSection() {
   const { t } = useLanguage()
@@ -177,12 +178,26 @@ export function HeroSection() {
                   <Plane className="h-4 w-4" />
                   {t("airport")}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setTripType("bulk")}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all whitespace-nowrap",
+                    tripType === "bulk"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  )}
+                >
+                  <Car className="h-4 w-4" />
+                  {t("bulk_booking")}
+                </button>
               </div>
 
               {/* Form Fields */}
               {tripType === "outstation" && <OutstationForm onSubmit={handleSubmit} />}
               {tripType === "local" && <LocalForm onSubmit={handleSubmit} />}
               {tripType === "airport" && <AirportForm onSubmit={handleSubmit} />}
+              {tripType === "bulk" && <BulkBookingForm onSubmit={handleSubmit} />}
             </div>
 
             <p className="text-center text-xs text-muted-foreground mt-4">
